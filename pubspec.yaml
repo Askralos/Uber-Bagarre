@@ -1,0 +1,46 @@
+name: uber_bagarre
+description: "A new Flutter project."
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.7.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  flutter_dotenv: ^5.2.1
+  mapbox_maps_flutter: ^2.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+
+flutter:
+
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  assets:
+    - .env
+    - assets/fonts/UberMove-Regular.ttf
+    - assets/fonts/UberMove-Bold.ttf
+    - assets/fonts/UberMove-Medium.ttf
+  #   - images/a_dot_burr.jpeg
+  #   - images/a_dot_ham.jpeg
+
+  fonts:
+    - family: UberMove
+      fonts:
+        - asset: assets/fonts/UberMove-Regular.ttf
+        - asset: assets/fonts/UberMove-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/UberMove-Medium.ttf
+          weight: 500
