@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:uber_bagarre/screen/recap_screen.dart';
 
 class UserDetailsScreen extends StatelessWidget {
   final Map<String, dynamic> user;
 
-  const UserDetailsScreen({super.key, required this.user});
+  UserDetailsScreen({super.key, required this.user});
+
+  final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _timeController =
+      TextEditingController(); // Nouveau contrôleur pour l'heure
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +23,7 @@ class UserDetailsScreen extends StatelessWidget {
                 user['pricing']! + " €",
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
-              SizedBox(width: 10),
+              SizedBox(width: 30),
               Expanded(
                 child: ElevatedButton(
                   onPressed: () {
@@ -37,20 +42,107 @@ class UserDetailsScreen extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                "Commander",
+                                "Commander le Fighter",
                                 style: TextStyle(
-                                  fontSize: 18,
+                                  fontSize: 24,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
+                              Divider(color: Colors.grey[300]),
                               SizedBox(height: 20),
-                              ElevatedButton(
-                                onPressed: () {
-                                  Navigator.pop(
-                                    context,
-                                  ); // Ferme le BottomSheet
-                                },
-                                child: Text("Fermer"),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Date",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  TextField(
+                                    controller: _dateController,
+                                    decoration: InputDecoration(
+                                      labelText: "Date",
+                                      filled: true,
+                                      prefixIcon: Icon(Icons.calendar_month),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderSide: BorderSide.none,
+                                      ),
+                                    ),
+                                    readOnly: true,
+                                    onTap: () {
+                                      selectDate(context);
+                                    },
+                                  ),
+                                ],
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Heure",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  TextField(
+                                    controller: _timeController,
+                                    // Utilise le contrôleur pour l'heure
+                                    decoration: InputDecoration(
+                                      labelText: "Heure",
+                                      filled: true,
+                                      prefixIcon: Icon(Icons.access_time),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderSide: BorderSide.none,
+                                      ),
+                                    ),
+                                    readOnly: true,
+                                    onTap: () {
+                                      selectTime(
+                                        context,
+                                      ); // Appelle la fonction selectTime
+                                    },
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 20),
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => RecapScreen(),
+                                      ),
+                                    );
+                                  },
+                                  style: ButtonStyle(
+                                    padding: WidgetStateProperty.all(
+                                      EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 12,
+                                      ),
+                                    ),
+                                    backgroundColor: MaterialStateProperty.all(
+                                      Colors.green,
+                                    ),
+                                    shape: MaterialStateProperty.all(
+                                      RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    "Confirmer",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
                               ),
                             ],
                           ),
@@ -59,12 +151,11 @@ class UserDetailsScreen extends StatelessWidget {
                     );
                   },
                   style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all(Colors.green),
-                    shape: WidgetStateProperty.all(
+                    padding: MaterialStateProperty.all(EdgeInsets.all(12)),
+                    backgroundColor: MaterialStateProperty.all(Colors.green),
+                    shape: MaterialStateProperty.all(
                       RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                          12,
-                        ), // Change le rayon ici
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                   ),
@@ -98,7 +189,6 @@ class UserDetailsScreen extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-
                   SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -181,7 +271,6 @@ class UserDetailsScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 40),
-
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -193,7 +282,6 @@ class UserDetailsScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: 15),
-
                     Row(
                       children: [
                         Icon(Icons.person),
@@ -210,7 +298,6 @@ class UserDetailsScreen extends StatelessWidget {
                       ],
                     ),
                     SizedBox(height: 15),
-
                     Row(
                       children: [
                         Icon(Icons.height),
@@ -245,5 +332,30 @@ class UserDetailsScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> selectDate(BuildContext context) async {
+    DateTime? newDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+
+    if (newDate != null) {
+      _dateController.text = "${newDate.day}/${newDate.month}/${newDate.year}";
+    }
+  }
+
+  Future<void> selectTime(BuildContext context) async {
+    TimeOfDay? newTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+
+    if (newTime != null) {
+      _timeController.text =
+          "${newTime.hour}:${newTime.minute.toString().padLeft(2, '0')}"; // Format de l'heure
+    }
   }
 }

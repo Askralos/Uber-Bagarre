@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'screen/fighter_screen.dart';
 import 'screen/home_screen.dart';
 import 'screen/profile_screen.dart';
+import 'screen/recap_screen.dart';
 import 'widget/navigation_bar.dart';
 
 class Navigation extends StatefulWidget {
@@ -15,7 +16,12 @@ class Navigation extends StatefulWidget {
 class _HomeScreenState extends State<Navigation> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = [HomeScreen(), FighterScreen(), ProfileScreen()];
+  final List<Widget> _pages = [
+    HomeScreen(),
+    FighterScreen(),
+    ProfileScreen(),
+    RecapScreen(),
+  ];
 
   void _onItemTapped(int index) {
     setState(() {

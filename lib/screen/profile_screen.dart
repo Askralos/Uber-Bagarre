@@ -1,30 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+  ProfileScreen({Key? key}) : super(key: key);
+
+  Future<List<dynamic>> _fetchUsers() async {
+    var supabase = Supabase.instance.client;
+
+    try {
+      final data = await supabase.from('users').select();
+      return data;
+    } catch (e) {
+      throw Exception('Erreur lors de la récupération des utilisateurs: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "John Doe",
-                style: TextStyle(fontSize: 34.0, fontWeight: FontWeight.bold),
-              ),
-              CircleAvatar(
-                radius: 30.0,
-                backgroundImage: NetworkImage(
-                  "https://plus.unsplash.com/premium_photo-1689568126014-06fea9d5d341?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                ),
-              ),
-            ],
-          ),
-        ),
+      appBar: AppBar(title: const Text('Profil Utilisateur')),
+      body: FutureBuilder(
+        future: _fetchUsers(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Erreur: ${snapshot.error}'));
+            // } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            //   return const Center(child: Text('Aucun utilisateur trouvé.'));
+          }
+
+          final users = snapshot.data!;
+          return ListView.builder(
+            itemCount: users.length,
+            itemBuilder: (context, index) {
+              final user = users[index];
+              return ListTile(
+                title: Text(user['name'] ?? 'Nom non disponible'),
+              );
+            },
+          );
+        },
       ),
     );
   }

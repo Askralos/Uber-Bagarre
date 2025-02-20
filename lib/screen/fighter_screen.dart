@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'user_details_screen.dart';
+import '../widget/search_bar.dart';
+import '../widget/sort_buttons.dart';
+import '../widget/user_tile.dart';
 
 class FighterScreen extends StatefulWidget {
   const FighterScreen({super.key});
@@ -87,6 +89,7 @@ class _FighterScreenState extends State<FighterScreen> {
           "Un combattant complet maîtrisant aussi bien la lutte que le striking, avec une grande expérience en cage.",
     },
   ];
+
   late List<Map<String, dynamic>> filteredUsers;
   final TextEditingController _searchController = TextEditingController();
   int? selectedSort;
@@ -125,7 +128,7 @@ class _FighterScreenState extends State<FighterScreen> {
 
   void _sortByRatingDescending() {
     setState(() {
-      selectedSort = 2; // 2 pour décroissant
+      selectedSort = 2;
       filteredUsers.sort(
         (a, b) =>
             double.parse(b["rating"]!).compareTo(double.parse(a["rating"]!)),
@@ -141,124 +144,40 @@ class _FighterScreenState extends State<FighterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Bagarreurs",
-              style: TextStyle(
-                fontFamily: 'UberMove',
-                fontSize: 34,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 20),
-            TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Color(0xFFE8E8E8),
-                prefixIcon: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12.0),
-                  child: Icon(Icons.search),
-                ),
-                hintText: "Rechercher",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-              style: TextStyle(fontSize: 16.0),
-            ),
-            const SizedBox(height: 10),
-
-            // Boutons de tri
-            Row(
-              children: [
-                ElevatedButton.icon(
-                  onPressed: () {
-                    _sortByRatingAscending();
-                  },
-                  icon: Icon(Icons.arrow_upward),
-                  label: Text("Note croissante"),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        selectedSort == 1
-                            ? Colors.grey[200]
-                            : null, // Change la couleur en vert si sélectionné
-                  ),
-                ),
-                SizedBox(width: 10),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    _sortByRatingDescending();
-                  },
-                  icon: Icon(Icons.arrow_downward),
-                  label: Text("Note décroissante"),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        selectedSort == 2
-                            ? Colors.grey[200]
-                            : null, // Change la couleur en vert si sélectionné
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 10),
-
-            Expanded(
-              child: ListView.builder(
-                itemCount: filteredUsers.length,
-                itemBuilder: (context, index) {
-                  final user = filteredUsers[index];
-                  return _buildUserTile(user);
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildUserTile(Map<String, dynamic> user) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => UserDetailsScreen(user: user),
-          ),
-        );
-      },
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 5.0),
-        padding: const EdgeInsets.all(8.0),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(8),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 4,
-              offset: Offset(0, 2),
-            ),
-          ],
-        ),
-        child: ListTile(
-          leading: CircleAvatar(backgroundImage: NetworkImage(user["image"]!)),
-          title: Text(user["name"]!),
-          subtitle: Text(user["distance"]!),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(user["rating"]!, style: TextStyle(fontSize: 18)),
-              SizedBox(width: 5),
-              Icon(Icons.star),
+              Text(
+                "Bagarreurs",
+                style: TextStyle(
+                  fontFamily: 'UberMove',
+                  fontSize: 34,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              ResearchBar(researchController: _searchController),
+              const SizedBox(height: 10),
+              SortButtons(
+                onSortAscending: _sortByRatingAscending,
+                onSortDescending: _sortByRatingDescending,
+                selectedSort: selectedSort,
+              ),
+              const SizedBox(height: 10),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: filteredUsers.length,
+                  itemBuilder: (context, index) {
+                    final user = filteredUsers[index];
+                    return UserTile(user: user);
+                  },
+                ),
+              ),
             ],
           ),
         ),
